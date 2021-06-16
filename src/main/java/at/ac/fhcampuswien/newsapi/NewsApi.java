@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import at.ac.fhcampuswien.newsapi.beans.NewsResponse;
 import at.ac.fhcampuswien.newsapi.enums.*;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -122,9 +121,10 @@ public class NewsApi {
             obj = new URL(url);
         } catch (MalformedURLException e) {
             // TODO improve ErrorHandling
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return null;
         }
-        HttpURLConnection con;
+        HttpURLConnection con = null;
         StringBuilder response = new StringBuilder();
         try {
             con = (HttpURLConnection) obj.openConnection();
@@ -136,7 +136,8 @@ public class NewsApi {
             in.close();
         } catch (IOException e) {
             // TODO improve ErrorHandling
-            System.out.println("Error "+e.getMessage());
+            System.err.println(e.getMessage());
+            if ( con!=null ) con.disconnect();
         }
         return response.toString();
     }
@@ -145,8 +146,6 @@ public class NewsApi {
         // TODO ErrorHandling
         String urlbase = String.format(NEWS_API_URL,getEndpoint().getValue(),getQ(),getApiKey());
         StringBuilder sb = new StringBuilder(urlbase);
-
-        System.out.println(urlbase);
 
         if(getFrom() != null){
             sb.append(DELIMITER).append("from=").append(getFrom());
@@ -203,4 +202,3 @@ public class NewsApi {
         return newsReponse;
     }
 }
-
